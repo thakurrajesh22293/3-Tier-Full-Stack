@@ -24,16 +24,11 @@ pipeline {
                     string(credentialsId: 'telegram_chat_id', variable: 'CHAT_ID')
                 ]) {
                     script {
-def SOURCE_BRANCH = sh(returnStdout: true, script: '''
-    git log -1 | grep '<-' | awk -F '<-|>' '{print $2}'
-''').trim()
-    echo ${SOURCE_BRANCH}
-
                         sh '''
                         CURRENT_DATE=$(date)
                         curl -s -X POST https://api.telegram.org/bot${TOKEN}/sendMessage \
                             -d "chat_id=${CHAT_ID}" \
-                            -d text="Job Name: ${JOB_NAME}\nStack: ${APPLICATION_NAME}\nUsername: ${BUILD_USER_ID}\nBuild Url: ${BUILD_URL}\nBuild Number: ${BUILD_NUMBER}\nBranch: ${BRANCH_NAME}\nSource Branch: ${SOURCE_BRANCH}\nDate/Time: ${CURRENT_DATE}\nStatus: 🚀 Deployment Started 🚀"
+                            -d text="Job Name: ${JOB_NAME}\nStack: ${APPLICATION_NAME}\nUsername: ${BUILD_USER_ID}\nBuild Url: ${BUILD_URL}\nBuild Number: ${BUILD_NUMBER}\nBranch: ${BRANCH_NAME}\nSource Branch: ${GIT_COMMIT}\nDate/Time: ${CURRENT_DATE}\nStatus: 🚀 Deployment Started 🚀"
                         '''
                     }
                 }
