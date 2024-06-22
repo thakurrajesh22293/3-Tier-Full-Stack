@@ -17,13 +17,7 @@ pipeline {
             }
         }
 
-        stage('Notify Start')
-def mergedBranchName = sh(returnStdout: true,
-                                  script: "git log -n 1 --pretty=format:'%s' \
-                                           | grep 'Merge pull' \
-                                           | awk -F \"/\" 'out=\"\";  { for (i=2; i<=NF; i++) { out=out\"/\"\$i;  } print out; }'"
-                                 ).trim().minus("/")
-{
+        stage('Notify Start') {
             steps {
                 withCredentials([
                     string(credentialsId: 'telegram_token', variable: 'TOKEN'),
