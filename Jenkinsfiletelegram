@@ -3,8 +3,25 @@ pipeline {
 
     environment {
         APPLICATION_NAME = 'WEBAPP'
-    }
 
+        // Fetch current branch name
+        BRANCH_NAME = sh(returnStdout: true,
+                                  script: "git log -n 1 --pretty=format:'%s' \
+                                           | grep 'Merge pull' \
+                                           | awk -F \"/\" 'out=\"\";  { for (i=2; i<=NF; i++) { out=out\"/\"\$i;  } print out; }'"
+                                 ).trim().minus("/")
+
+        // Fetch merged branch name if available
+        MERGED_BRANCH = sh(
+            script: '''
+                git log --merges --first-parent --oneline -n 1 |
+                grep "Merge pull" |
+                awk '{print $7}' |
+                cut -d "/" -f 2
+            ''',
+            returnStdout: true
+        ).trim()
+    }
     stages {
         stage('Build User') {
             steps {
