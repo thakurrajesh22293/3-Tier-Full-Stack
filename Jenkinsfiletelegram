@@ -3,23 +3,6 @@ pipeline {
 
     environment {
         APPLICATION_NAME = 'WEBAPP'
-
-        // Fetch current branch name
-        BRANCH_NAME = sh(
-            script: 'git rev-parse --abbrev-ref HEAD',
-            returnStdout: true
-        ).trim()
-
-        // Fetch merged branch name if available
-        MERGED_BRANCH = sh(
-            script: '''
-                git log --merges --first-parent --oneline -n 1 |
-                grep "Merge pull" |
-                awk '{print $7}' |
-                cut -d "/" -f 2
-            ''',
-            returnStdout: true
-        ).trim()
     }
 
     stages {
