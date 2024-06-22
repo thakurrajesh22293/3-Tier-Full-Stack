@@ -29,7 +29,6 @@ pipeline {
                     script {
                         env.BUILD_USER_ID = env.BUILD_USER ?: 'Unknown'
                     }
-                    echo "Triggered by: ${BUILD_USER_ID}"
                 }
             }
         }
