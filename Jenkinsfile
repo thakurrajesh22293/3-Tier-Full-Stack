@@ -67,15 +67,5 @@ pipeline {
                 }
             }
         }
-        
-        stage('Docker Deploy To Local') {
-            steps {
-                script {
-                    withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
-                        sh "docker run -d -p 3000:3000 amritmatti/testrepo:latest"
-                    }
-                }
-            }
-        }
     }
 }
