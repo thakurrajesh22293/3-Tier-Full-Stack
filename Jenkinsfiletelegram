@@ -41,7 +41,7 @@ pipeline {
                     script {
                         try {  
                             // Your test command here
-                            sh 'test' // Replace with your actual test command
+                            sh 'echo test' // Replace with your actual test command
                             // Simulate a failure for demonstration purposes
                             // sh 'exit 1' // Uncomment to simulate a failure
                         } catch (err) {
