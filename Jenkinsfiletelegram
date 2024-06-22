@@ -10,7 +10,7 @@ pipeline {
             returnStdout: true
         ).trim()
 
-        // Fetch merged branch name
+        // Fetch merged branch name if available
         MERGED_BRANCH = sh(
             script: '''
                 git log --merges --first-parent --oneline -n 1 |
@@ -23,7 +23,7 @@ pipeline {
     }
 
     stages {
-        stage('build user') {
+        stage('Build User') {
             steps {
                 wrap([$class: 'BuildUser']) {
                     script {
@@ -42,7 +42,7 @@ pipeline {
                 ]) {
                     script {
                         sh '''
-                        CURRENT_DATE=$(date)
+                        CURRENT_DATE=$(date +"%Y-%m-%d %H:%M:%S")
                         curl -s -X POST https://api.telegram.org/bot${TOKEN}/sendMessage \
                             -d "chat_id=${CHAT_ID}" \
                             -d text="Job Name: ${JOB_NAME}\nApplication: ${APPLICATION_NAME}\nUsername: ${BUILD_USER_ID}\nBuild Url: ${BUILD_URL}\nBuild Number: ${BUILD_NUMBER}\nBranch: ${BRANCH_NAME}\nMerged Branch: ${MERGED_BRANCH}\nDate/Time: ${CURRENT_DATE}\nStatus: 🚀 Deployment Started 🚀"
@@ -69,9 +69,7 @@ pipeline {
                             ]) {
                                 script {
                                     sh '''
-                                    CURRENT_DATE=$(date)
-                                    BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
-                                    MERGED_BRANCH=$(git log --merges --first-parent --oneline -n 1 | grep "Merge pull" | awk '{print $7}'| cut -d "/" -f 2)
+                                    CURRENT_DATE=$(date +"%Y-%m-%d %H:%M:%S")
                                     curl -s -X POST https://api.telegram.org/bot${TOKEN}/sendMessage \
                                         -d "chat_id=${CHAT_ID}" \
                                         -d text="Job Name: ${JOB_NAME}\nApplication: ${APPLICATION_NAME}\nUsername: ${BUILD_USER_ID}\nBuild Url: ${BUILD_URL}\nBuild Number: ${BUILD_NUMBER}\nBranch: ${BRANCH_NAME}\nMerged Branch: ${MERGED_BRANCH}\nDate/Time: ${CURRENT_DATE}\nStatus: ❌ Failed to build 😱"
@@ -93,9 +91,7 @@ pipeline {
                 ]) {
                     script {
                         sh '''
-                        CURRENT_DATE=$(date)
-                        BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
-                        MERGED_BRANCH=$(git log --merges --first-parent --oneline -n 1 | grep "Merge pull" | awk '{print $7}'| cut -d "/" -f 2)
+                        CURRENT_DATE=$(date +"%Y-%m-%d %H:%M:%S")
                         curl -s -X POST https://api.telegram.org/bot${TOKEN}/sendMessage \
                             -d "chat_id=${CHAT_ID}" \
                             -d text="Job Name: ${JOB_NAME}\nApplication: ${APPLICATION_NAME}\nUsername: ${BUILD_USER_ID}\nBuild Url: ${BUILD_URL}\nBuild Number: ${BUILD_NUMBER}\nBranch: ${BRANCH_NAME}\nMerged Branch: ${MERGED_BRANCH}\nDate/Time: ${CURRENT_DATE}\nStatus: ✅ Build successfully 😊"
