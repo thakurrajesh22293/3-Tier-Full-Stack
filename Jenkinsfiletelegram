@@ -2,9 +2,9 @@ pipeline {
     agent any
 
     environment {
-        APPLICATION_NAME='WEBAPP'
+        APPLICATION_NAME = 'WEBAPP'
         BRANCH_NAME = sh(returnStdout: true, script: 'git rev-parse --abbrev-ref HEAD').trim()
-        MERGED_BRANCH = sh(returnStdout: true, script: 'git log --merges --first-parent --oneline -n 1 ${GIT_COMMIT} | grep "Merge branch" | awk \'{print $4}\'').trim()
+        MERGED_BRANCH = sh(returnStdout: true, script: 'git log --merges --first-parent --oneline -n 1 | grep "Merge pull" | awk \'{print $7}\' | cut -d "/" -f 2').trim()
     }
 
     stages {
@@ -39,7 +39,7 @@ pipeline {
 
         stage('Execute JUnit Test & Build jar file') {
             steps {
-                dir ('src') {
+                dir('src') {
                     script {
                         try {  
                             // Your test command here
