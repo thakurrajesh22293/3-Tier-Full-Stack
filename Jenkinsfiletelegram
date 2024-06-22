@@ -4,7 +4,10 @@ pipeline {
     environment {
         APPLICATION_NAME = 'WEBAPP'
         BRANCH_NAME = sh(returnStdout: true, script: 'git rev-parse --abbrev-ref HEAD').trim()
-        MERGED_BRANCH = sh(returnStdout: true, script: 'git log --merges --first-parent --oneline -n 1 | grep "Merge pull" | awk \'{print $7}\' | cut -d "/" -f 2').trim()
+        MERGED_BRANCH = script {
+            def mergedBranch = sh(returnStdout: true, script: 'git log --merges --first-parent --oneline -n 1 | grep "Merge pull request" | awk \'{print $5}\'').trim()
+            return mergedBranch.split('/')[1]
+        }
     }
 
     stages {
