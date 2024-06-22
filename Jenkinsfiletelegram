@@ -1,45 +1,12 @@
 pipeline {
     agent any
 
+    environment {
+        APPLICATION_NAME = 'WEBAPP'
+    }
+
     stages {
-        stage('Setup Environment Variables') {
-            steps {
-                script {
-                    // Fetch current branch name
-                    env.BRANCH_NAME = sh(
-                        script: 'git rev-parse --abbrev-ref HEAD',
-                        returnStdout: true
-                    ).trim()
-
-                    // Fetch merged branch name if available
-                    env.MERGED_BRANCH = sh(
-                        script: '''
-                            git log --merges --first-parent --oneline -n 1 |
-                            grep "Merge pull" |
-                            awk '{print $7}' |
-                            cut -d "/" -f 2
-                        ''',
-                        returnStdout: true
-                    ).trim()
-
-                    // Fetch source branch name
-                    env.SOURCE_BRANCH = sh(
-                        script: '''
-                            git log --merges --first-parent origin/main |
-                            awk '/Merge pull request/{split($NF, arr, "/"); print arr[2]}' |
-                            head -1
-                        ''',
-                        returnStdout: true
-                    ).trim()
-                }
-
-                echo "Branch Name: ${env.BRANCH_NAME}"
-                echo "Merged Branch: ${env.MERGED_BRANCH}"
-                echo "Source Branch: ${env.SOURCE_BRANCH}"
-            }
-        }
-
-        stage('build user') {
+        stage('Build User') {
             steps {
                 wrap([$class: 'BuildUser']) {
                     script {
@@ -61,7 +28,7 @@ pipeline {
                         CURRENT_DATE=$(date)
                         curl -s -X POST https://api.telegram.org/bot${TOKEN}/sendMessage \
                             -d "chat_id=${CHAT_ID}" \
-                            -d text="Job Name: ${JOB_NAME}\nStack: ${APPLICATION_NAME}\nUsername: ${BUILD_USER_ID}\nBuild Url: ${BUILD_URL}\nBuild Number: ${BUILD_NUMBER}\nBranch: ${BRANCH_NAME}\nMerged Branch: ${MERGED_BRANCH}\nSource Branch: ${SOURCE_BRANCH}\nDate/Time: ${CURRENT_DATE}\nStatus: 🚀 Deployment Started 🚀"
+                            -d text="Job Name: ${JOB_NAME}\nStack: ${APPLICATION_NAME}\nUsername: ${BUILD_USER_ID}\nBuild Url: ${BUILD_URL}\nBuild Number: ${BUILD_NUMBER}\nBranch: ${BRANCH_NAME}\nSource Branch: ${SOURCE_BRANCH}\nDate/Time: ${CURRENT_DATE}\nStatus: 🚀 Deployment Started 🚀"
                         '''
                     }
                 }
@@ -88,7 +55,7 @@ pipeline {
                                     CURRENT_DATE=$(date)
                                     curl -s -X POST https://api.telegram.org/bot${TOKEN}/sendMessage \
                                         -d "chat_id=${CHAT_ID}" \
-                                        -d text="Job Name: ${JOB_NAME}\nStack: ${APPLICATION_NAME}\nUsername: ${BUILD_USER_ID}\nBuild Url: ${BUILD_URL}\nBuild Number: ${BUILD_NUMBER}\nBranch: ${BRANCH_NAME}\nMerged Branch: ${MERGED_BRANCH}\nSource Branch: ${SOURCE_BRANCH}\nDate/Time: ${CURRENT_DATE}\nStatus: ❌ Failed to build 😱"
+                                        -d text="Job Name: ${JOB_NAME}\nStack: ${APPLICATION_NAME}\nUsername: ${BUILD_USER_ID}\nBuild Url: ${BUILD_URL}\nBuild Number: ${BUILD_NUMBER}\nBranch: ${BRANCH_NAME}\nSource Branch: ${SOURCE_BRANCH}\nDate/Time: ${CURRENT_DATE}\nStatus: ❌ Failed to build 😱"
                                     '''
                                 }
                             }
@@ -110,7 +77,7 @@ pipeline {
                         CURRENT_DATE=$(date)
                         curl -s -X POST https://api.telegram.org/bot${TOKEN}/sendMessage \
                             -d "chat_id=${CHAT_ID}" \
-                            -d text="Job Name: ${JOB_NAME}\nStack: ${APPLICATION_NAME}\nUsername: ${BUILD_USER_ID}\nBuild Url: ${BUILD_URL}\nBuild Number: ${BUILD_NUMBER}\nBranch: ${BRANCH_NAME}\nMerged Branch: ${MERGED_BRANCH}\nSource Branch: ${SOURCE_BRANCH}\nDate/Time: ${CURRENT_DATE}\nStatus: ✅ Build successfully 😊"
+                            -d text="Job Name: ${JOB_NAME}\nStack: ${APPLICATION_NAME}\nUsername: ${BUILD_USER_ID}\nBuild Url: ${BUILD_URL}\nBuild Number: ${BUILD_NUMBER}\nBranch: ${BRANCH_NAME}\nSource Branch: ${SOURCE_BRANCH}\nDate/Time: ${CURRENT_DATE}\nStatus: ✅ Build successfully 😊"
                         '''
                     }
                 }
