@@ -1,5 +1,6 @@
 pipeline {
     agent any
+
     stages {
         stage('Setup Environment Variables') {
             steps {
@@ -38,13 +39,13 @@ pipeline {
             }
         }
 
-    stage {
-        stage('Build User') {
+        stage('build user') {
             steps {
                 wrap([$class: 'BuildUser']) {
                     script {
                         env.BUILD_USER_ID = env.BUILD_USER ?: 'Unknown'
                     }
+                    echo "Triggered by: ${BUILD_USER_ID}"
                 }
             }
         }
@@ -57,10 +58,10 @@ pipeline {
                 ]) {
                     script {
                         sh '''
-                        CURRENT_DATE=$(date)  
+                        CURRENT_DATE=$(date)
                         curl -s -X POST https://api.telegram.org/bot${TOKEN}/sendMessage \
                             -d "chat_id=${CHAT_ID}" \
-                            -d text="Job Name: ${JOB_NAME}\nStack: ${APPLICATION_NAME}\nUser: ${BUILD_USER_ID}\nBuild Url: ${BUILD_URL}\nBuild Number: ${BUILD_NUMBER}\nBranch: ${SOURCE_BRANCH}\nMerged Branch: ${MERGED_BRANCH}\nDate/Time: ${CURRENT_DATE}\nStatus: 🚀 Deployment Started 🚀"
+                            -d text="Job Name: ${JOB_NAME}\nStack: ${APPLICATION_NAME}\nUsername: ${BUILD_USER_ID}\nBuild Url: ${BUILD_URL}\nBuild Number: ${BUILD_NUMBER}\nBranch: ${BRANCH_NAME}\nMerged Branch: ${MERGED_BRANCH}\nSource Branch: ${SOURCE_BRANCH}\nDate/Time: ${CURRENT_DATE}\nStatus: 🚀 Deployment Started 🚀"
                         '''
                     }
                 }
@@ -87,7 +88,7 @@ pipeline {
                                     CURRENT_DATE=$(date)
                                     curl -s -X POST https://api.telegram.org/bot${TOKEN}/sendMessage \
                                         -d "chat_id=${CHAT_ID}" \
-                                        -d text="Job Name: ${JOB_NAME}\nStack: ${APPLICATION_NAME}\nUser: ${BUILD_USER_ID}\nBuild Url: ${BUILD_URL}\nBuild Number: ${BUILD_NUMBER}\nBranch: ${BRANCH_NAME}\nMerged Branch: ${MERGED_BRANCH}\nDate/Time: ${CURRENT_DATE}\nStatus: ❌ Failed to build 😱"
+                                        -d text="Job Name: ${JOB_NAME}\Stack: ${APPLICATION_NAME}\nUsername: ${BUILD_USER_ID}\nBuild Url: ${BUILD_URL}\nBuild Number: ${BUILD_NUMBER}\nBranch: ${BRANCH_NAME}\nMerged Branch: ${MERGED_BRANCH}\nSource Branch: ${SOURCE_BRANCH}\nDate/Time: ${CURRENT_DATE}\nStatus: ❌ Failed to build 😱"
                                     '''
                                 }
                             }
@@ -109,12 +110,11 @@ pipeline {
                         CURRENT_DATE=$(date)
                         curl -s -X POST https://api.telegram.org/bot${TOKEN}/sendMessage \
                             -d "chat_id=${CHAT_ID}" \
-                            -d text="Job Name: ${JOB_NAME}\nStack: ${APPLICATION_NAME}\nUser: ${BUILD_USER_ID}\nBuild Url: ${BUILD_URL}\nBuild Number: ${BUILD_NUMBER}\nBranch: ${BRANCH_NAME}\nMerged Branch: ${MERGED_BRANCH}\nDate/Time: ${CURRENT_DATE}\nStatus: ✅ Build successfully 😊"
+                            -d text="Job Name: ${JOB_NAME}\nStack: ${APPLICATION_NAME}\nUsername: ${BUILD_USER_ID}\nBuild Url: ${BUILD_URL}\nBuild Number: ${BUILD_NUMBER}\nBranch: ${BRANCH_NAME}\nMerged Branch: ${MERGED_BRANCH}\nSource Branch: ${SOURCE_BRANCH}\nDate/Time: ${CURRENT_DATE}\nStatus: ✅ Build successfully 😊"
                         '''
                     }
                 }
             }
         }
     }
-}
 }
