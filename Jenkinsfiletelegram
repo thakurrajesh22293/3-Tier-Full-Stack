@@ -6,7 +6,7 @@ pipeline {
 
         // Fetch current branch name
                 SOURCE_BRANCH = sh(
-                    script: "git log --merges --first-parent origin/master | awk '/Merge pull request/{split(\$NF, arr, \"/\"); print arr[2]}' | head -1",
+                    script: "git log --merges --first-parent origin/main | awk '/Merge pull request/{split(\$NF, arr, \"/\"); print arr[2]}' | head -1",
                     returnStdout: true
                 ).trim() 
 
