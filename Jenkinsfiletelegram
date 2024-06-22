@@ -42,7 +42,7 @@ pipeline {
                 ]) {
                     script {
                         sh '''
-                        CURRENT_DATE=$(date +"%Y-%m-%d %H:%M:%S")
+                        CURRENT_DATE=$(date")
                         curl -s -X POST https://api.telegram.org/bot${TOKEN}/sendMessage \
                             -d "chat_id=${CHAT_ID}" \
                             -d text="Job Name: ${JOB_NAME}\nApplication: ${APPLICATION_NAME}\nUsername: ${BUILD_USER_ID}\nBuild Url: ${BUILD_URL}\nBuild Number: ${BUILD_NUMBER}\nBranch: ${BRANCH_NAME}\nMerged Branch: ${MERGED_BRANCH}\nDate/Time: ${CURRENT_DATE}\nStatus: 🚀 Deployment Started 🚀"
@@ -69,7 +69,7 @@ pipeline {
                             ]) {
                                 script {
                                     sh '''
-                                    CURRENT_DATE=$(date +"%Y-%m-%d %H:%M:%S")
+                                    CURRENT_DATE=$(date")
                                     curl -s -X POST https://api.telegram.org/bot${TOKEN}/sendMessage \
                                         -d "chat_id=${CHAT_ID}" \
                                         -d text="Job Name: ${JOB_NAME}\nApplication: ${APPLICATION_NAME}\nUsername: ${BUILD_USER_ID}\nBuild Url: ${BUILD_URL}\nBuild Number: ${BUILD_NUMBER}\nBranch: ${BRANCH_NAME}\nMerged Branch: ${MERGED_BRANCH}\nDate/Time: ${CURRENT_DATE}\nStatus: ❌ Failed to build 😱"
@@ -91,7 +91,7 @@ pipeline {
                 ]) {
                     script {
                         sh '''
-                        CURRENT_DATE=$(date +"%Y-%m-%d %H:%M:%S")
+                        CURRENT_DATE=$(date")
                         curl -s -X POST https://api.telegram.org/bot${TOKEN}/sendMessage \
                             -d "chat_id=${CHAT_ID}" \
                             -d text="Job Name: ${JOB_NAME}\nApplication: ${APPLICATION_NAME}\nUsername: ${BUILD_USER_ID}\nBuild Url: ${BUILD_URL}\nBuild Number: ${BUILD_NUMBER}\nBranch: ${BRANCH_NAME}\nMerged Branch: ${MERGED_BRANCH}\nDate/Time: ${CURRENT_DATE}\nStatus: ✅ Build successfully 😊"
