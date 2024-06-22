@@ -24,6 +24,11 @@ pipeline {
                     string(credentialsId: 'telegram_chat_id', variable: 'CHAT_ID')
                 ]) {
                     script {
+def SOURCE_BRANCH = sh(returnStdout: true, script: '''
+    git log -1 | grep '<-' | awk -F '<-|>' '{print $2}'
+''').trim()
+    echo ${SOURCE_BRANCH}
+
                         sh '''
                         CURRENT_DATE=$(date)
                         curl -s -X POST https://api.telegram.org/bot${TOKEN}/sendMessage \
