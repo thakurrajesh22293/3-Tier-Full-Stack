@@ -28,7 +28,7 @@ pipeline {
                         CURRENT_DATE=$(date)
                         curl -s -X POST https://api.telegram.org/bot${TOKEN}/sendMessage \
                             -d "chat_id=${CHAT_ID}" \
-                            -d text="Job Name: ${JOB_NAME}\nStack: ${APPLICATION_NAME}\nUsername: ${BUILD_USER_ID}\nBuild Url: ${BUILD_URL}\nBuild Number: ${BUILD_NUMBER}\nBranch: ${GIT_BRANCH}\nSource Branch: ${GIT_COMMIT}\nDate/Time: ${CURRENT_DATE}\nStatus: 🚀 Deployment Started 🚀"
+                            -d text="Job Name: ${JOB_NAME}\nStack: ${APPLICATION_NAME}\nUsername: ${BUILD_USER_ID}\nBuild Url: ${BUILD_URL}\nBuild Number: ${BUILD_NUMBER}\nBranch: ${GIT_BRANCH}\nSource Branch: ${GIT_COMMITTER_DATE}\nDate/Time: ${CURRENT_DATE}\nStatus: 🚀 Deployment Started 🚀"
                         '''
                     }
                 }
