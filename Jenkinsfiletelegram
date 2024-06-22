@@ -26,6 +26,8 @@ pipeline {
                     script {
                         sh '''
                         CURRENT_DATE=$(date)
+git rev-parse --abbrev-ref HEAD
+git log --merges --first-parent --oneline -n 1 | grep "Merge pull" | awk '{print $7}'| cut -d "/" -f 2
                         BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
                         MERGED_BRANCH=$(git log --merges --first-parent --oneline -n 1 | grep "Merge pull" | awk '{print $7}'| cut -d "/" -f 2)
 echo ${BRANCH_NAME}
