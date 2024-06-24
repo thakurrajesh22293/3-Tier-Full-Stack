@@ -6,18 +6,38 @@ pipeline {
     }
 
     stages {
-        stage('Build User') {
+        stage('Collecting Build User Name') {
             steps {
+                // Collection username of user who has started job
                 wrap([$class: 'BuildUser']) {
                     script {
                         env.BUILD_USER_ID = env.BUILD_USER ?: 'Unknown'
                     }
-                    echo "Triggered by: ${BUILD_USER_ID}"
+                }
+            }
+        }
+        stage('Collectin Env\'s') {
+            steps {
+                // Collecting Git Branch and Merged Branch Name
+                script {
+                    env.SOURCE_BRANCH = sh(
+                        script: 'git rev-parse --abbrev-ref HEAD',
+                        returnStdout: true
+                    ).trim()
+
+                    env.MERGED_BRANCH = sh(
+                        script: '''
+                            git log --merges --first-parent --oneline -n 1 | grep "Merge pull" | \
+                            awk '{print $7}' | cut -d "/" -f 2
+                        ''',
+                        returnStdout: true
+                    ).trim()
                 }
             }
         }
 
         stage('Notify Start') {
+                // Sending Alert for build start
             steps {
                 withCredentials([
                     string(credentialsId: 'telegram_token', variable: 'TOKEN'),
@@ -28,7 +48,7 @@ pipeline {
                         CURRENT_DATE=$(date)
                         curl -s -X POST https://api.telegram.org/bot${TOKEN}/sendMessage \
                             -d "chat_id=${CHAT_ID}" \
-                            -d text="Job Name: ${JOB_NAME}\nStack: ${APPLICATION_NAME}\nUsername: ${BUILD_USER_ID}\nBuild Url: ${BUILD_URL}\nBuild Number: ${BUILD_NUMBER}\nBranch: ${GIT_BRANCH}\nMerged Branch: ${GIT_COMMITTER_NAME}\nDate/Time: ${CURRENT_DATE}\nStatus: 🚀 Deployment Started 🚀"
+                            -d text="Application: ${APPLICATION_NAME}\nUser: ${BUILD_USER_ID}\nBuild Url: ${BUILD_URL}\nBuild Number: ${BUILD_NUMBER}\nDeployment Branch: ${SOURCE_BRANCH}\nMerged Branch: ${SOURCE_BRANCH} <-- ${MERGED_BRANCH}\nDate/Time: ${CURRENT_DATE}\nStatus: 🚀 Deployment Started 🚀"
                         '''
                     }
                 }
@@ -37,11 +57,12 @@ pipeline {
 
         stage('Execute JUnit Test & Build jar file') {
             steps {
+                // Performing Job Steps and send alert if job failed due to any issue
                 dir('src') {
                     script {
-                        try {  
+                        try {
                             // Your test command here
-                            sh 'echo test' // Replace with your actual test command
+                            sh 'test' // Replace with your actual test command
                             // Simulate a failure for demonstration purposes
                             // sh 'exit 1' // Uncomment to simulate a failure
                         } catch (err) {
@@ -55,7 +76,7 @@ pipeline {
                                     CURRENT_DATE=$(date)
                                     curl -s -X POST https://api.telegram.org/bot${TOKEN}/sendMessage \
                                         -d "chat_id=${CHAT_ID}" \
-                                        -d text="Job Name: ${JOB_NAME}\nStack: ${APPLICATION_NAME}\nUsername: ${BUILD_USER_ID}\nBuild Url: ${BUILD_URL}\nBuild Number: ${BUILD_NUMBER}\nBranch: ${BRANCH_NAME}\nMerged Branch: ${SOURCE_BRANCH}\nDate/Time: ${CURRENT_DATE}\nStatus: ❌ Failed to build 😱"
+                                        -d text="Application: ${APPLICATION_NAME}\nUser: ${BUILD_USER_ID}\nBuild Url: ${BUILD_URL}\nBuild Number: ${BUILD_NUMBER}\nDeployment Branch: ${SOURCE_BRANCH}\nMerged Branch: ${SOURCE_BRANCH} <-- ${MERGED_BRANCH}\nDate/Time: ${CURRENT_DATE}\nStatus: ❌ Failed to build 😱"
                                     '''
                                 }
                             }
@@ -67,6 +88,7 @@ pipeline {
         }
 
         stage('Finished msg') {
+                // Sending Alert if Job is
             steps {
                 withCredentials([
                     string(credentialsId: 'telegram_token', variable: 'TOKEN'),
@@ -77,7 +99,7 @@ pipeline {
                         CURRENT_DATE=$(date)
                         curl -s -X POST https://api.telegram.org/bot${TOKEN}/sendMessage \
                             -d "chat_id=${CHAT_ID}" \
-                            -d text="Job Name: ${JOB_NAME}\nStack: ${APPLICATION_NAME}\nUsername: ${BUILD_USER_ID}\nBuild Url: ${BUILD_URL}\nBuild Number: ${BUILD_NUMBER}\nBranch: ${BRANCH_NAME}\nMerged Branch: ${SOURCE_BRANCH}\nDate/Time: ${CURRENT_DATE}\nStatus: ✅ Build successfully 😊"
+                            -d text="Application: ${APPLICATION_NAME}\nUser: ${BUILD_USER_ID}\nBuild Url: ${BUILD_URL}\nBuild Number: ${BUILD_NUMBER}\nDeployment Branch: ${SOURCE_BRANCH}\nMerged Branch: ${SOURCE_BRANCH} <-- ${MERGED_BRANCH}\nDate/Time: ${CURRENT_DATE}\nStatus: ✅ Build successfully 😊"
                         '''
                     }
                 }
